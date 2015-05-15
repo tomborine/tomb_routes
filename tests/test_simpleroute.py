@@ -1,4 +1,6 @@
 from pyramid import testing
+from pyramid.threadlocal import get_current_request
+from pyramid.url import route_url
 from webtest import TestApp
 
 import pytest
@@ -99,6 +101,22 @@ def test_declarative_config_method():
 
     response = _make_app(config).get(
         '/path/to/decorated/view/method', status=200
+    )
+
+    assert response.content_type == 'application/json'
+    assert response.json == {'foo': 'bar'}
+
+
+@pytest.mark.integration
+def test_declarative_config_custom_name():
+    config = _make_config()
+    config.scan('tests.simple_app')
+
+    app = _make_app(config)
+
+    url = testing.DummyRequest().route_url("custom_named_route")
+    response = _make_app(config).get(
+        url, status=200
     )
 
     assert response.content_type == 'application/json'
@@ -257,3 +275,4 @@ def test_support_pregenerator_without_slash():
     assert response.json == {
         'url': 'http://localhost/test/boomshaka',
     }
+    assert 'custom_named_route' in route_names

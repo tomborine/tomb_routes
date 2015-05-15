@@ -56,9 +56,13 @@ def add_simple_route(
 
     target = DottedNameResolver().maybe_resolve(target)
 
-    route_name = target.__name__
-    if 'attr' in kwargs:
-        route_name += '.' + kwargs['attr']
+    # Explicitly supplied route name
+    route_name = kwargs.pop("route_name", None)
+
+    if not route_name:
+        route_name = target.__name__
+        if 'attr' in kwargs:
+            route_name += '.' + kwargs['attr']
 
     current_pregen = kwargs.pop('pregenerator', None)
 

@@ -36,6 +36,19 @@ You can use ``simple_route`` as a decorator:
     def my_route(request, name):
         return Response('Hello %s' % name)
 
+Seting route name is optional. By default the route name is
+the dotted path of the Python function.
+
+.. code-block:: python
+
+    @simple_route('/hello/{name}', route_name="custom_name", \
+        append_slash=False)
+    def my_route(request, name):
+        return Response('Hello %s' % name)
+
+    def another_view(request):
+        return request.route_url("custom_name", name="john")
+
 or you can use it from the configurator:
 
 .. code-block:: python
