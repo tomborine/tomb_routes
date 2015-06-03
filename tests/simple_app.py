@@ -10,7 +10,7 @@ def decorated_view(request):
     return {'foo': 'bar'}
 
 
-@simple_route('/path/to/decorated/view/custom_named_route', \
+@simple_route('/path/to/decorated/view/custom_named_route',
               route_name="custom_named_route", renderer='json',
               append_slash=False)
 def custom_named_route_view(request):
