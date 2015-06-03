@@ -106,6 +106,20 @@ def test_declarative_config_method():
 
 
 @pytest.mark.integration
+def test_declarative_config_custom_name():
+    config = _make_config()
+    config.scan('tests.simple_app')
+
+    url = testing.DummyRequest().route_url("custom_named_route")
+    response = _make_app(config).get(
+        url, status=200
+    )
+
+    assert response.content_type == 'application/json'
+    assert response.json == {'foo': 'bar'}
+
+
+@pytest.mark.integration
 def test_matchdict_method():
     config = _make_config()
     config.scan('tests.simple_app')
@@ -162,11 +176,12 @@ def test_declarative_route_name():
     routes = route_mapper.get_routes()
     route_names = [route.name for route in routes]
 
-    assert len(routes) == 5
+    assert len(routes) == 6
     assert 'MyViewsClass.imperative_view' in route_names
     assert 'MyViewsClass.matchdict_view' in route_names
     assert 'decorated_view' in route_names
     assert 'matchdict_view' in route_names
+    assert 'custom_named_route' in route_names
 
 
 @pytest.mark.integration
