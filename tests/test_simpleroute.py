@@ -167,3 +167,25 @@ def test_declarative_route_name():
     assert 'MyViewsClass.matchdict_view' in route_names
     assert 'decorated_view' in route_names
     assert 'matchdict_view' in route_names
+
+
+@pytest.mark.integration
+def test_nested_includes():
+    def app_routes(config):
+        config.add_simple_route('/', 'tests.simple_app.MyViewsClass',
+                                attr='imperative_view',
+                                renderer='json')
+
+    def v1_routes(config):
+        config.include(app_routes, route_prefix='/app')
+
+    def include(config):
+        config.include(v1_routes, route_prefix='/v1')
+
+    config = _make_config()
+    config.include(include)
+
+    response = _make_app(config).get('/v1/app', status=200)
+
+    assert response.content_type == 'application/json'
+    assert response.json == {'foo': 'bar'}
